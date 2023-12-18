@@ -17,7 +17,8 @@ class PepSpider(scrapy.Spider):
     def parse_pep(self, response):
         """Парсинг документа PEP."""
         pep_main = response.css('section#pep-content')
-        pep_number_and_name = pep_main.css('h1::text').get().split(' – ')
+        pep_h1 = pep_main.css('h1::text').get().replace(' – ', '///', 1)
+        pep_number_and_name = pep_h1.split('///')
         data = {
             'number': pep_number_and_name[0],
             'name': pep_number_and_name[1],

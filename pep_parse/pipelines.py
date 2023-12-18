@@ -1,16 +1,18 @@
+import csv
 from pathlib import Path
 
 from datetime import datetime
 
 BASE_DIR = Path(__file__).parent.parent
+DATETIME = datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
 
 
 class PepParsePipeline:
 
     def open_spider(self, spider):
-        self.quantity_status = {'Total': 0}
+        self.quantity_status = {}
         results = BASE_DIR / 'results'
-        file = f'status_summary_{datetime.now():%Y-%m-%d-%H-%M}.csv'
+        file = f'status_summary_{DATETIME}.csv'
         results.mkdir(exist_ok=True)
         self.filename = results / file
 
@@ -20,13 +22,16 @@ class PepParsePipeline:
             self.quantity_status[item['status']] += 1
         else:
             self.quantity_status[item['status']] = 1
-        self.quantity_status['Total'] += 1
 
         return item
 
     def close_spider(self, spider):
 
         with open(self.filename, mode='w', encoding='utf-8') as f:
-            f.write('Статус,Количество\n')
+            writer = csv.writer(f)
+            writer.writerow(['Статус', 'Количество'])
+            total = 0
             for key, value in self.quantity_status.items():
-                f.write(f'{key},{value}\n')
+                total += value
+                writer.writerow([key, value])
+            writer.writerow(['Total', total])
