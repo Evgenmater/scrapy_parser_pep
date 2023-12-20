@@ -17,11 +17,14 @@ class PepSpider(scrapy.Spider):
     def parse_pep(self, response):
         """Парсинг документа PEP."""
         pep_main = response.css('section#pep-content')
-        pep_h1 = pep_main.css('h1::text').get().replace(' – ', '///', 1)
-        pep_number_and_name = pep_h1.split('///')
+        pep_h1 = pep_main.css('h1::text').get()
+        pep_number = ' '.join(pep_h1.split()[:2])
+        pep_text = pep_main.css('h1 ::text').getall()
+        join_list = ''.join(pep_text)
+        pep_name = ''.join(join_list.split(pep_number))
         data = {
-            'number': pep_number_and_name[0],
-            'name': pep_number_and_name[1],
+            'number': pep_number,
+            'name': pep_name,
             'status': pep_main.css('abbr::text').get(),
         }
         yield PepParseItem(data)

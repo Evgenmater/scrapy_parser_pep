@@ -4,7 +4,7 @@ from pathlib import Path
 from datetime import datetime
 
 BASE_DIR = Path(__file__).parent.parent
-DATETIME = datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
+DATETIME_FORMAT = '%Y-%m-%d-%H-%M-%S'
 
 
 class PepParsePipeline:
@@ -12,7 +12,7 @@ class PepParsePipeline:
     def open_spider(self, spider):
         self.quantity_status = {}
         results = BASE_DIR / 'results'
-        file = f'status_summary_{DATETIME}.csv'
+        file = f'status_summary_{datetime.now().strftime(DATETIME_FORMAT)}.csv'
         results.mkdir(exist_ok=True)
         self.filename = results / file
 
