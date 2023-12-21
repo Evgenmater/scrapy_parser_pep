@@ -2,6 +2,11 @@ import scrapy
 
 from pep_parse.items import PepParseItem
 
+INDEX_WITH_TEXT = 0
+BEGINNING_SECTION_WITH_NAME = 3
+END_SECTION_WITH_NAME = -2
+SECTION_WITH_NUMBER = 2
+
 
 class PepSpider(scrapy.Spider):
     name = 'pep'
@@ -16,15 +21,13 @@ class PepSpider(scrapy.Spider):
 
     def parse_pep(self, response):
         """Парсинг документа PEP."""
-        pep_main = response.css('section#pep-content')
-        pep_h1 = pep_main.css('h1::text').get()
-        pep_number = ' '.join(pep_h1.split()[:2])
-        pep_text = pep_main.css('h1 ::text').getall()
-        join_list = ''.join(pep_text)
-        pep_name = ''.join(join_list.split(pep_number))
+        pep_title = response.css('title::text').get()
+        pep_number = ' '.join(pep_title.split()[:SECTION_WITH_NUMBER])
+        pep_name = ' '.join(pep_title.split()[
+            BEGINNING_SECTION_WITH_NAME:END_SECTION_WITH_NAME])
         data = {
             'number': pep_number,
             'name': pep_name,
-            'status': pep_main.css('abbr::text').get(),
+            'status': response.css('abbr::text').get(),
         }
         yield PepParseItem(data)

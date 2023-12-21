@@ -12,7 +12,8 @@ class PepParsePipeline:
     def open_spider(self, spider):
         self.quantity_status = {}
         results = BASE_DIR / 'results'
-        file = f'status_summary_{datetime.now().strftime(DATETIME_FORMAT)}.csv'
+        datetime_now = datetime.now().strftime(DATETIME_FORMAT)
+        file = f'status_summary_{datetime_now}.csv'
         results.mkdir(exist_ok=True)
         self.filename = results / file
 
